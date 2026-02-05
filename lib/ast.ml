@@ -2,10 +2,10 @@ type id = string
 type binary_op = Add | Mult | And | Or | Lt | Gt | Eq | NotEq | Lte | Gte
 type unary_op = Not
 type loc = Lexing.position
+type literal = Number of float | Boolean of bool
 
 type expr =
-  | ExprInt of loc * int
-  | ExprBool of loc * bool
+  | ExprLiteral of loc * literal
   | ExprVar of loc * id
   | ExprBinaryOp of loc * binary_op * expr * expr
   | ExprUnaryOp of loc * unary_op * expr
@@ -35,8 +35,10 @@ let string_of_binary_op binary_op =
 let rec string_of_expr ~indent ast =
   let pad n = String.make (indent * n) ' ' in
   match ast with
-  | ExprInt (_, i) -> Fmt.str "int(%d)" i
-  | ExprBool (_, b) -> Fmt.str "bool(%b)" b
+  | ExprLiteral (_, literal) -> (
+      match literal with
+      | Number f -> Fmt.str "number(%f)" f
+      | Boolean b -> Fmt.str "bool(%b)" b)
   | ExprVar (_, id) -> Fmt.str "var(%s)" id
   | ExprBinaryOp (_, op, e1, e2) ->
       Fmt.str "%s(\n%s%s,%s)" (string_of_binary_op op) (pad 2)

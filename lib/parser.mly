@@ -1,7 +1,7 @@
 %{
 open Ast
 
-let rec apply loc e es = 
+let rec apply loc e es =
 	match es with
 	| [] -> failwith "precondition violated"
   | [e'] -> ExprApp (loc, e, e')
@@ -9,7 +9,7 @@ let rec apply loc e es =
 %}
 
 %token <string> ID
-%token <int> INT
+%token <float> NUMBER
 %token LPAREN RPAREN ARROW NOT AND OR LT GT EQ NOT_EQ LTE GTE PLUS TIMES EQUALS TRUE FALSE FUN LET IN IF THEN ELSE EOF
 
 %nonassoc IN
@@ -46,7 +46,7 @@ expr:
 	| e1 = expr; NOT_EQ; e2 = expr { ExprBinaryOp ($startpos, NotEq, e1, e2) }
 	| e1 = expr; LTE; e2 = expr { ExprBinaryOp ($startpos, Lte, e1, e2) }
 	| e1 = expr; GTE; e2 = expr { ExprBinaryOp ($startpos, Gte, e1, e2) }
-  | e1 = expr; TIMES; e2 = expr { ExprBinaryOp ($startpos, Mult, e1, e2) } 
+  | e1 = expr; TIMES; e2 = expr { ExprBinaryOp ($startpos, Mult, e1, e2) }
 	| e1 = expr; PLUS; e2 = expr { ExprBinaryOp ($startpos, Add, e1, e2) }
 	| FUN; param = ID; ARROW; e = expr; { ExprFun ($startpos, param, e) }
 	| LET; id = ID; EQUALS; e1 = expr; IN; e2 = expr { ExprLet ($startpos, id, e1, e2) }
@@ -61,7 +61,7 @@ basic_expr:
 	;
 
 literal:
-	| i = INT { ExprInt ($startpos, i) }
-	| TRUE { ExprBool ($startpos, true) }
-	| FALSE { ExprBool ($startpos, false) }
+	| n = NUMBER { ExprLiteral ($startpos, Number n) }
+	| TRUE { ExprLiteral ($startpos, Boolean true) }
+	| FALSE { ExprLiteral ($startpos, Boolean false) }
 	;

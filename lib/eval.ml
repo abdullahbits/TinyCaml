@@ -6,18 +6,18 @@ module Environment = Map.Make_tree (String)
 let empty_env = Environment.empty
 
 type env = value Environment.t
-and value = VBool of bool | VInt of int | VClosure of string * expr * env
+and value = VBool of bool | VNumber of float | VClosure of string * expr * env
 
 let string_of_value value =
   match value with
   | VBool b -> Fmt.str "%b" b
-  | VInt i -> Fmt.str "%d" i
+  | VNumber i -> Fmt.str "%f" i
   | VClosure (param, _, _) -> Fmt.str "fun %s" param
 
 let rec eval (env : env) (expr : expr) : value =
   match expr with
-  | ExprInt (_, i) -> VInt i
-  | ExprBool (_, b) -> VBool b
+  | ExprLiteral (_, literal) -> (
+      match literal with Number f -> VNumber f | Boolean b -> VBool b)
   | ExprVar (loc, id) -> eval_var env loc id
   | ExprBinaryOp (loc, op, expr1, expr2) ->
       eval_binary_op env loc op expr1 expr2
@@ -34,16 +34,16 @@ and eval_var (env : env) (loc : loc) (id : id) : value =
 and eval_binary_op (env : env) (loc : loc) (op : binary_op) (expr1 : expr)
     (expr2 : expr) : value =
   match (op, eval env expr1, eval env expr2) with
-  | Add, VInt a, VInt b -> VInt (a + b)
-  | Mult, VInt a, VInt b -> VInt (a * b)
+  | Add, VNumber a, VNumber b -> VNumber (a +. b)
+  | Mult, VNumber a, VNumber b -> VNumber (a *. b)
   | And, VBool a, VBool b -> VBool (a && b)
   | Or, VBool a, VBool b -> VBool (a || b)
-  | Lt, VInt a, VInt b -> VBool (a < b)
-  | Gt, VInt a, VInt b -> VBool (a > b)
-  | Eq, VInt a, VInt b -> VBool (a = b)
-  | NotEq, VInt a, VInt b -> VBool (not (equal_int a b))
-  | Lte, VInt a, VInt b -> VBool (a <= b)
-  | Gte, VInt a, VInt b -> VBool (a >= b)
+  | Lt, VNumber a, VNumber b -> VBool (Core.Float.( < ) a b)
+  | Gt, VNumber a, VNumber b -> VBool (Core.Float.( > ) a b)
+  | Eq, VNumber a, VNumber b -> VBool (Core.Float.( = ) a b)
+  | NotEq, VNumber a, VNumber b -> VBool (Core.Float.( <> ) a b)
+  | Lte, VNumber a, VNumber b -> VBool (Core.Float.( <= ) a b)
+  | Gte, VNumber a, VNumber b -> VBool (Core.Float.( >= ) a b)
   | _ -> raise_type_error loc
 
 and eval_unary_op (env : env) (loc : loc) (op : unary_op) (expr : expr) : value
