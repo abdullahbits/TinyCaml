@@ -5,7 +5,7 @@
 (generate_opam_files true)
 
 (source
- (github abdllahdev/TinyCaml))
+ (github abdufelsayed/TinyCaml))
 
 (authors "Abdullah Fathy Elsayed")
 

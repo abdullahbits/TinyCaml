@@ -15,8 +15,8 @@ tags: [
   "functional-programming"
   "static-typing"
 ]
-homepage: "https://github.com/abdllahdev/TinyCaml"
-bug-reports: "https://github.com/abdllahdev/TinyCaml/issues"
+homepage: "https://github.com/abdufelsayed/TinyCaml"
+bug-reports: "https://github.com/abdufelsayed/TinyCaml/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.10"}
@@ -38,4 +38,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/abdllahdev/TinyCaml.git"
+dev-repo: "git+https://github.com/abdufelsayed/TinyCaml.git"
